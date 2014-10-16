@@ -1,51 +1,85 @@
-import cwiid, time
+import RPi.GPIO as GPIO
+import cwiid
 
-button_delay = 0.1
+Motor1A =
+Motor1B =
+Motor1E =
 
-print 'Please press buttons 1 + 2 on the Wiimote...'
+Motor2A =
+Motor2B =
+Motor2E =
+
+GPIO.setmode(GPIO.BOARD)
+
+GPIO.setup(Motor1A,GPIO.OUT)
+GPIO.setup(Motor1B,GPIO.OUT)
+GPIO.setup(Motor1E,GPIO.OUT)
+
+GPIO.setup(Motor2A,GPIO.OUT)
+GPIO.setup(Motor2B,GPIO.OUT)
+GPIO.setup(Motor2E,GPIO.OUT)
+
+print 'Press 1 + 2 on the Wii Remote'
 time.sleep(1)
 
 try:
-  wii=cwiid.Wiimote()
+	wii=cwiid.Wiimote()
 except RuntimeError:
-  print "Connection failed!"
-  quit()
+	print 'Failed to connect'
+	quit()
 
-print 'Connection established!\n'
-print 'Go ahead and press some buttons\n'
-print 'Press PLUS and MINUS together to disconnect and quit.\n'
-
-time.sleep(3)
+print 'Wii Remote Connected!'
 
 wii.rpt_mode = cwiid.RPT_BTN
 
 while True:
 
-  buttons = wii.state['buttons']
+	buttons = wii.state['buttons']
 
-  if (buttons - cwiid.BTN_PLUS - cwiid.BTN_MINUS == 0):
-    print '\nClosing connection ...'
-    wii.rumble = 1
-    time.sleep(1)
-    wii.rumble = 0
-    exit(wii)
+# Forwards (Both motors forwards)
+	if (buttons & cwiid.BTN_UP):
+		GPIO.output(Motor1A,GPIO.HIGH)
+		GPIO.output(Motor1B,GPIO.LOW)
+		GPIO.output(Motor1E,GPIO.HIGH)
+		GPIO.output(Motor2A,GPIO.HIGH)
+		GPIO.output(Motor2B,GPIO.LOW)
+		GPIO.output(Motor2E,GPIO.HIGH)
+	else:
+		GPIO.output(Motor1E,GPIO.LOW)
+		GPIO.output(Motor2E,GPIO.LOW)
 
-  if (buttons & cwiid.BTN_LEFT):
-    print 'Left pressed'
-    time.sleep(button_delay)
+# Backwards (Both motors backwards)
+	if (buttons & cwiid.BTN_DOWN):
+		GPIO.output(Motor1A,GPIO.LOW)
+		GPIO.output(Motor1B,GPIO.HIGH)
+		GPIO.output(Motor1E,GPIO.HIGH)
+		GPIO.output(Motor2A,GPIO.LOW)
+		GPIO.output(Motor2B,GPIO.HIGH)
+		GPIO.output(Motor2E,GPIO.HIGH)
+	else:
+		GPIO.output(Motor1E,GPIO.LOW)
+		GPIO.output(Motor2E,GPIO.LOW)
 
-  if(buttons & cwiid.BTN_RIGHT):
-    print 'Right pressed'
-    time.sleep(button_delay)
+# Left (Motor 1 backwards & Motor 2 forwards)
+	if (buttons & cwiid.BTN_LEFT:
+		GPIO.output(Motor1A,GPIO.LOW)
+		GPIO.output(Motor1B,GPIO.HIGH)
+		GPIO.output(Motor1E,GPIO.HIGH)
+		GPIO.output(Motor2A,GPIO.HIGH)
+		GPIO.output(Motor2B,GPIO.LOW)
+		GPIO.output(Motor2E,GPIO.HIGH)
+	else:
+		GPIO.output(Motor1E,GPIO.LOW)
+		GPIO.output(Motor2E,GPIO.LOW)
 
-  if (buttons & cwiid.BTN_UP):
-    print 'Up pressed'
-    time.sleep(button_delay)
-
-  if (buttons & cwiid.BTN_DOWN):
-    print 'Down pressed'
-    time.sleep(button_delay)
-
-  if (buttons & cwiid.BTN_1):
-    print 'Button 1 pressed'
-    time.sleep(button_delay)
+# Right (Motor 1 forwards & Motor 2 backwards)
+	if (buttons & cwiid.BTN_RIGHT:
+		GPIO.output(Motor1A,GPIO.HIGH)
+		GPIO.output(Motor1B,GPIO.LOW)
+		GPIO.output(Motor1E,GPIO.HIGH)
+		GPIO.output(Motor2A,GPIO.LOW)
+		GPIO.output(Motor2B,GPIO.HIGH)
+		GPIO.output(Motor2E,GPIO.HIGH)
+	else:
+		GPIO.output(Motor1E,GPIO.LOW)
+		GPIO.output(Motor2E,GPIO.LOW)
